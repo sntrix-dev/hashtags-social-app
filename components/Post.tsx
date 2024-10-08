@@ -3,6 +3,7 @@ import { View, Text, Image, Touchable, TouchableOpacity } from "react-native";
 import { users } from "../data/users";
 import icons from "@/constants/icons";
 import moment from "moment";
+import { router } from "expo-router";
 
 interface PostCardProps {
   id: number;
@@ -27,7 +28,11 @@ const PostCard: FC<PostCardProps> = ({
 }) => {
   return (
     <View className="p-4 gap-y-4">
-      <View className="flex-row gap-2 items-center">
+      <TouchableOpacity
+        className="flex-row gap-2 items-center"
+        activeOpacity={0.7}
+        onPress={() => router.push(`/user/${userId}`)}
+      >
         <Image
           source={{ uri: users.find((i) => i.id === userId)?.profileImage }}
           className="w-10 h-10 rounded-full"
@@ -48,7 +53,7 @@ const PostCard: FC<PostCardProps> = ({
             resizeMode="contain"
           />
         </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
 
       {!!imageUrl && (
         <Image
