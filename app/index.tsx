@@ -2,8 +2,10 @@ import { Link, router } from "expo-router";
 import { View, Text, Image, FlatList, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { users } from "../data/users";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { useGlobalContext } from "@/context/GlobalProvider";
+import { getToken, removeToken } from "@/services/storage";
+import { authorize } from "@/services/apis/auth";
 
 interface LoginCardProps {
   name: string;
@@ -32,8 +34,33 @@ const LoginCard: FC<LoginCardProps> = ({
   );
 };
 
-const Login = () => {
+const Boarding = () => {
   const { user, setUser } = useGlobalContext();
+
+  const checkForAuth = () => {
+    getToken()
+      .then((token) => {
+        if (token) {
+          authorize(token)
+            .then((res) => {
+              console.log(res);
+              setUser?.(res.decodedToken.id);
+              router.push("/home");
+            })
+            .catch((err) => {
+              router.push("/login");
+            });
+        }
+      })
+      .catch((err) => {
+        router.push("/login");
+      });
+  };
+
+  useEffect(() => {
+    checkForAuth();
+    removeToken();
+  }, []);
 
   return (
     <SafeAreaView className="bg-dark-black w-full h-full">
@@ -56,4 +83,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Boarding;
